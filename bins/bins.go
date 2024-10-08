@@ -1,12 +1,18 @@
 package bins
 
-Type Bin struct {
-	id        	string
-	private   	bool
-	createdAt 	time.Time
-	name 		string
+import (
+	"time"
+)
+
+type Bin struct {
+	Id        string 	`json:"id"`
+	Private   bool   	`json:"private"`
+	CreatedAt time.Time `json:"createdAt"`
+	Name      string 	`json:"name"`
 }
 
-Type BinList struct{
-	Bins 		[]Bin
+
+
+type BinList struct {
+	Bins 	[]Bin
 }
