@@ -1,28 +1,61 @@
 package storage
 
 import (
+	"demo/password/bins"
+	"demo/password/file"
+	"encoding/json"
 	"fmt"
-	"os"
+	"time"
 )
 
-func ReadBin(name string) ([]byte, error) {
-	data, err := os.ReadFile(name)
-	if err !=nil {
+type Storage struct {
+	Bins     []bins.Bin `json: "bins"`
+	UpdateAt time.Time  `json: "updateAt"`
+}
+
+func (storage *Storage) AddBin(bin bins.Bin) {
+	storage.Bins = append(storage.Bins, bin)
+}
+
+func (storage *Storage) SaveStorage() {
+	storage.UpdateAt = time.Now()
+	data, err := storage.ToBytes()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	file.WriteFile(data, "data.json")
+}
+
+func (storage *Storage) ToBytes() ([]byte, error) {
+	data, err := json.Marshal(storage)
+	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	return data, nil
 }
-func WriteBin(content []byte, name string) {
-	file, err := os.Create(name)
-	if err !=nil {
-		fmt.Println("Ошибка!")
+
+func NewStorage() (*Storage, error) {
+	data, err := file.ReadFile("data.json")
+	if err != nil || len(data) == 0 {
+		fmt.Println(err)
+		return &Storage{}, nil
 	}
-	_, err = file.Write(content)
-	defer file.Close()
+	storage := &Storage{}
+	err = json.Unmarshal(data, storage)
 	if err != nil {
-		fmt.Println("Ошибка!")
-		return
+		fmt.Println(err)
+		return nil, err
 	}
-	fmt.Println("Запись успешна!")
-	
+	return storage, nil
+}
+
+func ReadBinList(storage *Storage) ([]bins.Bin, error) {
+	storage, err := NewStorage()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return storage.Bins, nil
 }
