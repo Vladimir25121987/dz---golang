@@ -9,22 +9,22 @@ import (
 )
 
 type Storage struct {
-	Bins     []bins.Bin `json: "bins"`
-	UpdateAt time.Time  `json: "updateAt"`
+	Bins     []bins.Bin `json:"bins"`
+	UpdateAt time.Time  `json:"updateAt"`
 }
 
 func (storage *Storage) AddBin(bin bins.Bin) {
 	storage.Bins = append(storage.Bins, bin)
 }
 
-func (storage *Storage) SaveStorage() {
+func (storage *Storage) Save() {
 	storage.UpdateAt = time.Now()
 	data, err := storage.ToBytes()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	file.WriteFile(data, "data.json")
+	file.WriteFile(data, "storage.json")
 }
 
 func (storage *Storage) ToBytes() ([]byte, error) {
@@ -37,8 +37,8 @@ func (storage *Storage) ToBytes() ([]byte, error) {
 }
 
 func NewStorage() (*Storage, error) {
-	data, err := file.ReadFile("data.json")
-	if err != nil || len(data) == 0 {
+	data, err := file.ReadFile("storage.json")
+	if err != nil {
 		fmt.Println(err)
 		return &Storage{}, nil
 	}
@@ -49,13 +49,4 @@ func NewStorage() (*Storage, error) {
 		return nil, err
 	}
 	return storage, nil
-}
-
-func ReadBinList(storage *Storage) ([]bins.Bin, error) {
-	storage, err := NewStorage()
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	return storage.Bins, nil
 }

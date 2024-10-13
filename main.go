@@ -4,27 +4,20 @@ import (
 	"demo/password/bins"
 	"demo/password/storage"
 	"fmt"
-	"time"
 )
 
 
 func main() {
-	
-	file, err := storage.NewStorage()
-	if err !=nil {
-		fmt.Println("Ошибка!")
+	Bin1, _ := bins.NewBin("1", true, "Bin1")
+
+	Storage1, err := storage.NewStorage()
+	if err != nil {
+		fmt.Print(err)
 	}
-	return file, nil
-
-
-
+	Storage1.AddBin(*Bin1)
+	Storage1.Save()
 }
 
-func CreateBin(private bool, name string, id string) bins.Bin {
-	return bins.Bin {
-	Id:        	id, 
-	Private:   	private,
-	CreatedAt: 	time.Now(),
-	Name: 		name,
-	}
-}
+
+
+
